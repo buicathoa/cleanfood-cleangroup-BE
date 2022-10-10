@@ -1,0 +1,13 @@
+const authController = require('./../controllers/authController')
+const validationMiddleware = require('../middlewares/validation')
+const {userLoginSchema} = require("../validationSchema/user.schema")
+const router = require("express").Router();
+
+router.post("/registers", authController.registerUser)
+// router.post("/login" ,validationMiddleware(userLoginSchema), authController.loginUser)
+// router.post("/verify", authController.verifyUser)
+// router.post("/forgot-password", authController.forgotPassword)
+// router.post("/recovery-password", authController.recoveryPassword)
+
+
+module.exports = router
