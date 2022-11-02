@@ -26,15 +26,16 @@ const comboPackageController = {
       package_sale_price,
       package_original_price,
     } = req.body;
-    const image = req.file.path;
-    const package_url_gen = removeVietnameseTones(package_title.split("(")[0].trim())
-    console.log('package_url_gen', package_url_gen)
+    const image = req.file.path; 
+    const packageUrlgen = removeVietnameseTones(package_title.split("(")[0].trim()).toLowerCase()
+    .split(" ")
+    .join("-")
     try {
       const newComboPackage = await new ComboPackage({
         package_title: package_title,
         package_description: package_description,
         package_image: image,
-        package_url_generated: package_url_gen,
+        package_url_generated: packageUrlgen,
       }); 
       const comboPackage = await newComboPackage.save();
       return handleSuccess(
@@ -46,21 +47,34 @@ const comboPackageController = {
       return handleError(err);
     }
   },
-  addWeekdayToComboPackage: async (req, res) => {
-    const { comboPackage_id, list_weekday_id } = req.body;
+  getAllComboPackage: async (req, res) => {;
     try {
       // const comboPackageFoundAndUpdate = await ComboPackage.findByIdAndUpdate(comboPackage_id, {weekdays: list_weekday_id})
-      const comboPackageFoundAndUpdate = await ComboPackage.findByIdAndUpdate(
-        comboPackage_id,
-        { weekdays: list_weekday_id }
-      );
-
-      await comboPackageFoundAndUpdate.save();
-      return handleResponse(
+      const allComboPackage = await ComboPackage.find({});
+      return handleSuccess(
         res,
-        comboPackageFoundAndUpdate,
-        "Update successfully!"
+        allComboPackage,
+        "Get all combo package successfully!"
       );
+    } catch (err) {
+      return handleError(err);
+    }
+  },
+  getComboPackageByRoute: async (req, res) => {
+    const {route} = req.body
+    try {
+      // const comboPackageFoundAndUpdate = await ComboPackage.findByIdAndUpdate(comboPackage_id, {weekdays: list_weekday_id})
+      const ComboPackageFound = await ComboPackage.find({package_url_generated: route});
+      console.log('ComboPackageFound', ComboPackageFound)
+      if(ComboPackageFound.length === 0) {
+        return res.status(404).json("Can't find combo package")
+      } else {
+        return handleSuccess(
+          res,
+          ComboPackageFound,
+          "Get combo package successfully"
+        );
+      }
     } catch (err) {
       return handleError(err);
     }

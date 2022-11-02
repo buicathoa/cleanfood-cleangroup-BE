@@ -65,7 +65,7 @@ const authController = {
         //   });
         const user = await newUser.save()
         let userResponse = user._doc;
-        debugger
+      
         delete userResponse.password;
         res.status(200).json(userResponse);
       } else {

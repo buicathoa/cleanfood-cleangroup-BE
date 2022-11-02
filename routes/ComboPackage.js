@@ -7,12 +7,8 @@ const { uploadImage } = require('../helper');
 const router = require("express").Router();
 
 router.post("/create",uploadImage('comboPackage').single('image') ,comboPackageController.createComboPackage)
-router.post("/insert-weekday-to-combo", comboPackageController.addWeekdayToComboPackage)
-
-// router.post("/login" ,validationMiddleware(userLoginSchema), authController.loginUser)
-// router.post("/verify", authController.verifyUser)
-// router.post("/forgot-password", authController.forgotPassword)
-// router.post("/recovery-password", authController.recoveryPassword)
+router.post("/get-all", comboPackageController.getAllComboPackage)
+router.post("/get-by-route", comboPackageController.getComboPackageByRoute)
 
 
 module.exports = router

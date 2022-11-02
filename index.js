@@ -6,6 +6,9 @@ const cookieParser = require("cookie-parser");
 const authRoute = require("./routes/auth");
 const weekdaysRoute = require("./routes/weekdays");
 const ComboPackageRoute = require("./routes/ComboPackage");
+const CartRoute = require("./routes/Cart");
+const GeneralRoute = require("./routes/GeneralMenu");
+
 const userRoute = require("./routes/user");
 // const locationRoute = require("./routes/location");
 // const postsRoute = require("./routes/posts");
@@ -33,6 +36,8 @@ app.use(express.json());
 app.use("/v1/auth", authRoute);
 app.use("/v1/weekdays", weekdaysRoute);
 app.use("/v1/combo-package", ComboPackageRoute);
+app.use("/v1/cart", CartRoute);
+app.use("/v1/general-menu", GeneralRoute);
 
 // app.use("/v1/user", userRoute);
 // app.use("/v1/province", locationRoute);
