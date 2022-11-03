@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
+const { conn, cleanfoodDb } = require("../connections");
 
-const userSchemaNormal = new mongoose.Schema(
+const userSchemaCleanfood = new mongoose.Schema(
   {
     username: {
       unique: true,
@@ -35,20 +36,52 @@ const userSchemaNormal = new mongoose.Schema(
       type: String,
       require: true,
     },
-    province_id: {
+    Cart: {
+      total_price: {
+        type: String,
+      },
+      list: [{ type: mongoose.Schema.Types.ObjectId, ref: "Cart" }],
+    },
+    list_days_order:
+    [{ type: mongoose.Schema.Types.ObjectId, ref: "MenuPersonal" }]
+  },
+  { timestamps: true }
+);
+
+const userSchemaHistoryOrder = new mongoose.Schema(
+  {
+    username: {
+      unique: true,
+      require: true,
       type: String,
     },
-    district_id: {
+    email: {
       type: String,
+      required: true,
     },
-    ward_id: {
+    firstname: {
       type: String,
+      required: true,
     },
-    address_detail: {
+    lastname: {
       type: String,
+      required: true,
     },
-    full_address: {
+    password: {
       type: String,
+      required: true,
+    },
+    is_active: {
+      type: Boolean,
+      default: false,
+    },
+    is_admin: {
+      type: Boolean,
+      default: false,
+    },
+    phone_number: {
+      type: String,
+      require: true,
     },
     Cart: {
       total_price: {
@@ -58,22 +91,14 @@ const userSchemaNormal = new mongoose.Schema(
     },
     list_days_order:
     [{ type: mongoose.Schema.Types.ObjectId, ref: "MenuPersonal" }]
-    //  [
-    //   {
-    //     title: String,
-    //     start: String,
-    //     is_reserved: Boolean,
-    //     extendedProps: {
-    //       ship_address: String,
-    //       ship_time: Date,
-    //       list_meals: [
-    //         { session: String, meal_name_vi: String, meal_name_en: String },
-    //       ],
-    //     },
-    //   },
-    // ],
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("User", userSchemaNormal);
+const userSchemaCleanfoodSchema = cleanfoodDb.model("userSchemaCleanfood", userSchemaCleanfood);
+const userSchemaHistoryOrderSchema = historyorderDb.model("userSchemaHistoryOrder", userSchemaHistoryOrder)
+
+module.exports = {
+  userSchemaCleanfood: userSchemaCleanfoodSchema,
+  userSchemaHistoryOrder: userSchemaHistoryOrderSchema,
+};
