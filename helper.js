@@ -57,6 +57,10 @@ const removeVietnameseTones = (str) => {
   return str;
 }
 
+const findWithMultipleQuery = (prop, queryProp, value) => {
+  return value === null ? {[prop]: {$exists: true}} : {[prop]: {[queryProp]: value}}
+}
+
 // const genLocation = async (address_detail, province_id, district_id, ward_id) => {
 //   let provinceName;
 //   let districtName;
@@ -80,4 +84,4 @@ const removeVietnameseTones = (str) => {
 //     return `${address_detail}, ${wardName}, ${districtName}, ${provinceName}`
 // }
 
-module.exports = {uploadImage, removeVietnameseTones}
+module.exports = {uploadImage, removeVietnameseTones, findWithMultipleQuery}
