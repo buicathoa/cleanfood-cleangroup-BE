@@ -50,12 +50,9 @@ const userSchemaNormal = new mongoose.Schema(
     full_address: {
       type: String,
     },
-    Cart: {
-      total_price: {
-        type: String,
-      },
-      list: [{ type: mongoose.Schema.Types.ObjectId, ref: "Cart" }],
-    },
+    Cart: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Cart" }
+    ],
     list_days_order:
     [{ type: mongoose.Schema.Types.ObjectId, ref: "MenuPersonal" }]
     //  [

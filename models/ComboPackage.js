@@ -6,6 +6,10 @@ const comboPackage = new mongoose.Schema(
         type: String,
         required: true
     },
+    package_sub_title:{
+        type: String,
+        required: true
+    },
     package_description: {
         type: String,
         required: true
@@ -14,11 +18,8 @@ const comboPackage = new mongoose.Schema(
         type: String, 
         required: true
     },
-    package_sale_price: {
-        type: String
-    },
-    package_original_price: {
-        type: String
+    price_per_meal: {
+        type: Number
     },
     package_url_generated: {
         type: String

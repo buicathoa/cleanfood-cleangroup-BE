@@ -1,33 +1,13 @@
-const User = require("../models/User");
 const jwt_decode = require("jwt-decode");
 const { handleError, handleSuccess } = require("../utils/handleResponse");
-const { to } = require("await-to-js");
-const bcrypt = require("bcrypt");
-const multer = require("multer");
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
-const sharp = require("sharp");
-const { Weekdays } = require("../models/Weekdays");
-const ComboPackage = require("../models/ComboPackage");
-const { removeVietnameseTones, findWithMultipleQuery } = require("../helper");
-var mongoose = require("mongoose");
+const { findWithMultipleQuery } = require("../helper");
 const {
-  GeneralDays,
   GeneralMenus,
-  MenuPersonal,
   Usertest,
   MenuRegister,
 } = require("../models/GeneralMenu");
-const cloudinary = require("cloudinary").v2;
 const moment = require("moment");
 
-// const redis = require('redis')
-// const REDIS_PORT = process.env.PORT || 6379
-// const client = redis.createClient(REDIS_PORT)
-// client.connect();
-
-// client.on('connect', () => {
-//     console.log('connected');
-// });
 const GeneralMenuController = {
   createGeneralMenus: async (req, res) => {
     const {
@@ -131,6 +111,7 @@ const GeneralMenuController = {
             ship_time: ship_time,
             ship_place: ship_place,
             order_status: order_status,
+            user_id: decoded.id
           },
         }
       );
@@ -171,17 +152,3 @@ const GeneralMenuController = {
 };
 
 module.exports = GeneralMenuController;
-
-// db.examSheet.aggregate([
-//   {
-//    "$match":{
-//      "$and":[
-//        {"$or":[
-//          {"exam":"halfyr_T","marks.p":{"$gte":"25"}},
-//          {"exam":"annual_T","marks.p":{"$gte":"35"}}
-//        ]},
-//        {"std":"9"},
-//        {"year":"2017"}
-//      ]
-//   }
-//  }])

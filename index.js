@@ -4,25 +4,16 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const authRoute = require("./routes/auth");
-const weekdaysRoute = require("./routes/weekdays");
 const ComboPackageRoute = require("./routes/ComboPackage");
 const CartRoute = require("./routes/Cart");
 const GeneralRoute = require("./routes/GeneralMenu");
+const OrderRoute = require("./routes/Order");
+const CoinRoute = require("./routes/Coin");
 
 const userRoute = require("./routes/user");
-// const locationRoute = require("./routes/location");
-// const postsRoute = require("./routes/posts");
-// const productRoute = require("./routes/product")
-// const filterRoute = require("./routes/filter")
 
 const { handleError } = require("./utils/handleResponse");
-const bodyParser = require("body-parser");
-const redis = require("redis");
-const fs = require("fs").promises
-// const puppeteer = require("puppeteer");
-// const { request } = require("express");
-// const request = require("request-promise-native");
-// const poll = require("promise-poller").default;
+
 const app = express();
 dotenv.config();
 mongoose.connect(process.env.MONGODB_ROBO3T, () => {
@@ -34,10 +25,15 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use("/v1/auth", authRoute);
-app.use("/v1/weekdays", weekdaysRoute);
 app.use("/v1/combo-package", ComboPackageRoute);
 app.use("/v1/cart", CartRoute);
 app.use("/v1/general-menu", GeneralRoute);
+
+//order
+app.use("/v1/order", OrderRoute);
+
+//coins
+app.use("/v1/coin", CoinRoute);
 
 // app.use("/v1/user", userRoute);
 // app.use("/v1/province", locationRoute);

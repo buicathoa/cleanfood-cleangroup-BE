@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const Cart = new mongoose.Schema(
   {
+    user_id: {
+      type: String,
+      required: true,
+    },
     combo_package: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "comboPackage",
@@ -12,18 +16,10 @@ const Cart = new mongoose.Schema(
       required: true,
     },
     price: {
-      type: String,
-      required: true,
-    },
-    meal_plan: {
-      type: String,
+      type: Number,
       required: true,
     },
     daily_calories: {
-      type: String,
-      required: true,
-    },
-    user_id: {
       type: String,
       required: true,
     },
@@ -38,7 +34,7 @@ const Purchase = new mongoose.Schema(
       required: true,
     },
     quantity_clean_coin: {
-      type: Number
+      type: Number,
     },
     cart_list: {
       total_price: String,

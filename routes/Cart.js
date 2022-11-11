@@ -1,15 +1,11 @@
-const authController = require('./../controllers/authController')
-const validationMiddleware = require('../middlewares/validation')
-const {userLoginSchema} = require("../validationSchema/user.schema");
-const weekdayController = require('../controllers/weekdaysController');
-const comboPackageController = require('../controllers/comboPackageController');
-const { uploadImage } = require('../helper');
 const cartController = require('../controllers/CartController');
+const authorize = require('../middlewares/authorize');
 const router = require("express").Router();
 
-router.post("/add", cartController.addToCart)
-router.post("/get-cart-by-user", cartController.getAllCartListByUser)
-// router.post("/get-by-route", comboPackageController.getComboPackageByRoute)
+router.post("/add",authorize(), cartController.addToCart)
+router.post("/get-cart-by-user", authorize(), cartController.getAllCartListByUser)
+router.post("/update-quantity", authorize(), cartController.updateCartByUser)
+router.post("/remove-cart-item", authorize(), cartController.removeCartItem)
 
 
 module.exports = router
