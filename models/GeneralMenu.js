@@ -90,7 +90,14 @@ const MenuRegister = new mongoose.Schema(
     order_status: {
       type: String
     },
-    user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    combo_package: {
+      type: mongoose.Schema.Types.ObjectId, ref: "comboPackage"
+    },
+    calories: {
+      type: Number,
+      required: true
+    }
   },
   { timestamps: true }
 );

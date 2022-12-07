@@ -19,6 +19,10 @@ const userSchemaNormal = new mongoose.Schema(
       type: String,
       required: true,
     },
+    user_count: {
+      type: Number,
+      required: true
+    },
     password: {
       type: String,
       required: true,

@@ -21,6 +21,7 @@ const authController = {
       const salt = await bcrypt.genSalt(10);
       const hashed = await bcrypt.hash(password, salt);
       const checkUser = await User.findOne({ email: req.body.email });
+      const userCount = await User.count()
       console.log(hashed)
       if (!checkUser) {
         // const combineLocation = await genLocation(address_detail, province_id, district_id,ward_id)
@@ -30,10 +31,7 @@ const authController = {
             email: email,
             firstname: firstname,
             lastname: lastname,
-            // province_id: province_id,
-            // district_id: district_id,
-            // ward_id: ward_id,
-            // address_detail: address_detail,
+            user_count: userCount + 1,
             is_active: is_active,
             is_admin: is_admin,
             // full_address: combineLocation,

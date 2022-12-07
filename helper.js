@@ -58,7 +58,7 @@ const removeVietnameseTones = (str) => {
 }
 
 const findWithMultipleQuery = (prop, queryProp, value) => {
-  return value === null ? {[prop]: {$exists: true}} : {[prop]: {[queryProp]: value}}
+  return value === undefined ? {[prop]: {$exists: true}} : {[prop]: {[queryProp]: value}}
 }
 
 // const genLocation = async (address_detail, province_id, district_id, ward_id) => {

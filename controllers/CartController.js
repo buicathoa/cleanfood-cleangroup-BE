@@ -6,7 +6,7 @@ var ObjectId = require("mongodb").ObjectId;
 
 const cartController = {
   addToCart: async (req, res) => {
-    const { combo_package, quantity, daily_calories, price, price_per_meal } =
+    const { combo_package, quantity, daily_calories, price, session_register } =
       req.body;
     const combo_package_id = ObjectId(combo_package);
     const combo_package_found = await Cart.findOne({
@@ -28,6 +28,7 @@ const cartController = {
           quantity: quantity,
           price: price,
           daily_calories: daily_calories,
+          session_register: session_register
         }).save();
         await User.updateOne(
           { _id: decoded.id },
@@ -90,17 +91,6 @@ const cartController = {
           {
             $project: {
               line_items: "$Cart",
-              // total_price: {
-              //   $sum: {
-              //     $map: {
-              //       input: "$Cart",
-              //       as: "cart",
-              //       in: {
-              //         $multiply: ["$$cart.price", "$$cart.quantity"],
-              //       },
-              //     },
-              //   },
-              // },
             },
           },
           {
@@ -136,7 +126,7 @@ const cartController = {
           });
           return handleSuccess(
             res,
-            { line_items: dataReturn, total_price: pipelines[0]?.total_price },
+            { line_items: dataReturn, total_price: dataReturn.map(item => item.total_price).reduce((prev, curr) => prev + curr, 0)},
             "Get list cart successfully!"
           );
         });

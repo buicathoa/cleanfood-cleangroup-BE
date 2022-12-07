@@ -20,9 +20,13 @@ const Cart = new mongoose.Schema(
       required: true,
     },
     daily_calories: {
-      type: String,
+      type: Number,
       required: true,
     },
+    session_register: {
+      type: String,
+      required: true
+    }
   },
   { timestamps: true }
 );

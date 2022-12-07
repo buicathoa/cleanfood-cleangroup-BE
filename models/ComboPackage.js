@@ -1,49 +1,31 @@
 const mongoose = require("mongoose");
 
-const comboPackage = new mongoose.Schema(
+const Product = new mongoose.Schema(
   {
-    package_title:{
+    title:{
         type: String,
         required: true
     },
-    package_sub_title:{
+    sub_title:{
         type: String,
         required: true
     },
-    package_description: {
+    description: {
         type: String,
         required: true
     },
-    package_image: {
+    image: {
         type: String, 
         required: true
     },
     price_per_meal: {
         type: Number
     },
-    package_url_generated: {
+    url_generated: {
         type: String
     }
   },
   { timestamps: true }
 );
 
-// const sessionOfDay = new mongoose.Schema(
-//   {
-//     sessionOfDay: {
-//       required: true,
-//       type: String,
-//     },
-//   },
-//   { timestamps: true }
-// );
-
-// const WeekdaySchema = mongoose.model("weekdays", weekdays);
-// const SessionOfDaySchema = mongoose.model("sessionOfDay", sessionOfDay);
-
-// module.exports = {
-//   Weekdays: WeekdaySchema,
-//   SessionOfDay: SessionOfDaySchema,
-// };
-
-module.exports = mongoose.model("comboPackage", comboPackage)
+module.exports = mongoose.model("Product", Product)

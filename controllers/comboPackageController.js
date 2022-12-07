@@ -7,7 +7,7 @@ const comboPackageController = {
       package_sub_title,
       package_description,
       price_per_meal,
-      packageUrlgen
+      package_url_generated
     } = req.body;
     const image = req.file.path; 
     try {
@@ -17,7 +17,7 @@ const comboPackageController = {
         package_description: package_description,
         package_image: image,
         price_per_meal: price_per_meal,
-        package_url_generated: packageUrlgen,
+        package_url_generated: package_url_generated,
       }); 
       const comboPackage = await newComboPackage.save();
       return handleSuccess(

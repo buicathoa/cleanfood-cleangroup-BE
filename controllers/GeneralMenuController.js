@@ -40,6 +40,7 @@ const GeneralMenuController = {
   getAllMenus: async (req, res) => {
     try {
       const rangeOfDaysAndMenu = await GeneralMenus.find({}).sort({ start: 1 });
+      debugger
       return handleSuccess(res, rangeOfDaysAndMenu, {
         message: "Get menu successfully!",
       });
@@ -48,7 +49,7 @@ const GeneralMenuController = {
     }
   },
   createDaysRegister: async (req, res) => {
-    const { start_date, end_date, list_days_order } = req.body;
+    const { start_date, end_date, combo_package, calories } = req.body;
     const decoded = await jwt_decode(req.headers.authorization);
     try {
       const day1 = moment(start_date);
@@ -62,6 +63,8 @@ const GeneralMenuController = {
             ship_place: "107/16 Hà đặc, phường Trung mỹ tây, quận 12",
             ship_time: "08:30 - 09:30",
             user_id: decoded.id,
+            combo_package: combo_package,
+            calories: calories
           });
           MenuRegister.date instanceof Date;
         }
@@ -88,7 +91,7 @@ const GeneralMenuController = {
           findWithMultipleQuery("order_status", "$eq", order_status),
           findWithMultipleQuery("user_id", "$eq", decoded.id),
         ],
-      });
+      }).populate("combo_package");
       return handleSuccess(res, listDaysRegister, {
         message: "Get menu-days register successfully!",
       });
