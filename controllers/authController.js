@@ -1,4 +1,4 @@
-const User = require("./../models/User");
+const UserModel = require("./../models/UserModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
@@ -20,12 +20,12 @@ const authController = {
     try {
       const salt = await bcrypt.genSalt(10);
       const hashed = await bcrypt.hash(password, salt);
-      const checkUser = await User.findOne({ email: req.body.email });
-      const userCount = await User.count()
+      const checkUser = await UserModel.findOne({ email: req.body.email });
+      const userCount = await UserModel.count()
       console.log(hashed)
       if (!checkUser) {
         // const combineLocation = await genLocation(address_detail, province_id, district_id,ward_id)
-          const newUser = await new User({
+          const newUser = await new UserModel({
             username: username,
             password: hashed,
             email: email,
@@ -76,7 +76,7 @@ const authController = {
   loginUser: async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(req.body.password, salt);
-    const user = await User.findOne({ username: req.body.username });
+    const user = await UserModel.findOne({ username: req.body.username });
     if (user) {
       const userResponse = {...user._doc};
       delete userResponse.password
@@ -112,7 +112,7 @@ const authController = {
   },
   verifyUser: async (req, res) => {
     try {
-      const updateActivate = await User.findByIdAndUpdate(req.body.id, {
+      const updateActivate = await UserModel.findByIdAndUpdate(req.body.id, {
         activate: true,
       });
       console.log("updateActivate", updateActivate);
@@ -125,7 +125,7 @@ const authController = {
   },
   forgotPassword: async (req, res) => {
     try {
-      const user = await User.findOne({ email: req.body.email });
+      const user = await UserModel.findOne({ email: req.body.email });
       if (!user) {
         return res.status(404).json("This email has not already exist !");
       } else {
@@ -165,7 +165,7 @@ const authController = {
     try {
       const salt = await bcrypt.genSalt(10);
       const hashed = await bcrypt.hash(req.body.password, salt);
-      const user = await User.findByIdAndUpdate(req.body.id, {
+      const user = await UserModel.findByIdAndUpdate(req.body.id, {
         password: hashed,
       });
       await user.save();

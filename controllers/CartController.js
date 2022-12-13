@@ -1,7 +1,7 @@
-const User = require("./../models/User");
+const UserModel = require("./../models/UserModel");
 const jwt_decode = require("jwt-decode");
 const { handleError, handleSuccess } = require("../utils/handleResponse");
-const { Cart } = require("./../models/Cart");
+const { CartModel } = require("./../models/CartModel");
 var ObjectId = require("mongodb").ObjectId;
 
 const cartController = {
@@ -9,20 +9,20 @@ const cartController = {
     const { combo_package, quantity, daily_calories, price, session_register } =
       req.body;
     const combo_package_id = ObjectId(combo_package);
-    const combo_package_found = await Cart.findOne({
+    const combo_package_found = await CartModel.findOne({
       combo_package: combo_package_id,
       daily_calories: daily_calories,
     });
     const decoded = await jwt_decode(req.headers.authorization);
     try {
       if (combo_package_found) {
-        await Cart.updateOne(
+        await CartModel.updateOne(
           { _id: combo_package_found._id },
           { quantity: combo_package_found.quantity + quantity }
         );
         return handleSuccess(res, {}, { message: "Add to cart successfully!" });
       } else {
-        const newItemInCart = await new Cart({
+        const newItemInCart = await new CartModel({
           user_id: decoded.id,
           combo_package: combo_package,
           quantity: quantity,
@@ -30,7 +30,7 @@ const cartController = {
           daily_calories: daily_calories,
           session_register: session_register
         }).save();
-        await User.updateOne(
+        await UserModel.updateOne(
           { _id: decoded.id },
           { $push: { Cart: newItemInCart } }
         );
@@ -47,8 +47,8 @@ const cartController = {
     const { cart_id, quantity, inc_quantity } = req.body;
     try {
       quantity
-        ? await Cart.findOneAndUpdate({ _id: cart_id }, { quantity: quantity })
-        : await Cart.findOneAndUpdate(
+        ? await CartModel.findOneAndUpdate({ _id: cart_id }, { quantity: quantity })
+        : await CartModel.findOneAndUpdate(
             { _id: cart_id },
             { $inc: { quantity: inc_quantity } }
           );
@@ -61,7 +61,7 @@ const cartController = {
   removeCartItem: async (req, res) => {
     const {cart_id} = req.body;
     try{
-      await Cart.findByIdAndRemove(cart_id)
+      await CartModel.findByIdAndRemove(cart_id)
       return handleSuccess(res, {message: "Remove item successfully!"})
     }
     catch(err){
@@ -71,7 +71,7 @@ const cartController = {
 
   getAllCartListByUser: async (req, res) => {
     const decoded = await jwt_decode(req.headers.authorization);
-    const listCart = await User.findById(decoded.id);
+    const listCart = await UserModel.findById(decoded.id);
     try {
       if (listCart._doc.Cart?.length > 0) {
         const pipeline = [
@@ -110,7 +110,7 @@ const cartController = {
             },
           },
         ];
-        await User.aggregate(pipeline).exec((err, pipelines) => {
+        await UserModel.aggregate(pipeline).exec((err, pipelines) => {
           if (err) {
             return handleError(res, err);
           }

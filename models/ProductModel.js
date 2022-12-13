@@ -23,7 +23,12 @@ const Product = new mongoose.Schema(
     },
     url_generated: {
         type: String
+    },
+    product_type: {
+        type: String,
+        required: true
     }
+
   },
   { timestamps: true }
 );

@@ -57,8 +57,8 @@ const userSchemaNormal = new mongoose.Schema(
     Cart: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Cart" }
     ],
-    list_days_order:
-    [{ type: mongoose.Schema.Types.ObjectId, ref: "MenuPersonal" }]
+    // list_days_order:
+    // [{ type: mongoose.Schema.Types.ObjectId, ref: "MenuPersonal" }]
     //  [
     //   {
     //     title: String,

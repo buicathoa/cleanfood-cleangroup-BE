@@ -14,7 +14,7 @@ const uploadImage = (type) => {
         cloudinary: cloudinary,
         params: {
           // folder: type === 'avatar' ? 'avatar' : 'posts',
-          folder: type === 'avatar' ? 'avatar' : type === 'meals' ? 'meals' : 'blogs'
+          folder: type === 'avatar' ? 'avatar' : type === 'product' ? 'product' : 'blogs'
         },
         filename: function (req, file, cb) {
           cb(null, file.originalname); 
