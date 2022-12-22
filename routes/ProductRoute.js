@@ -1,4 +1,5 @@
 const { handle } = require('express/lib/application');
+const { calories, mealPlans, mealPlansSession } = require('../constants');
 const ProductController = require('../controllers/ProductController');
 const { uploadImage } = require('../helper');
 const { handleSuccess, handleError } = require('../utils/handleResponse');
@@ -9,9 +10,6 @@ router.post("/get-all", ProductController.getAllProduct)
 router.post("/get-by-route", ProductController.getProductbyRoute)
 router.post('/get-cost', (req, res) => {
     try{
-        const calories = [{value: 1, price: 65000}, {value: 2, price: 70000}, {value: 3, price: 75000}, {value: 4, price: 80000}, {value: 5, price: 85000}]; 
-        const mealPlansSession = [{value: 1, ratio: 0, quantity: 2}, {value: 2, ratio: 0, quantity: 2}, {value: 3, ratio: 0, quantity: 2}, {value: 4, ratio: 2, quantity: 3}]; //sáng, trưa, chiều
-        const mealPlans = [{value: 1, ratio: 0, quantity: 6}, {value: 2, ratio: 2, quantity: 12}]; //1 tuần, 2 tuần
         const {calories_id, mealplans_id, mealplans_session_id} = req.body
         const caloFound = calories.find(item => calories_id === item.value)
         const mealPlanFound = mealPlans.find(item => mealplans_id === item.value)

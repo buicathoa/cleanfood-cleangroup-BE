@@ -2,8 +2,10 @@
 const sharp = require("sharp");
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const { Province, District, Ward } = require("./models/LocationModel");
 // const { Province, District, Ward } = require("./models/location");
 const cloudinary = require("cloudinary").v2;
+
 const uploadImage = (type) => {
     cloudinary.config({
         cloud_name: "dd8brzr2h",
@@ -61,27 +63,27 @@ const findWithMultipleQuery = (prop, queryProp, value) => {
   return value === undefined ? {[prop]: {$exists: true}} : {[prop]: {[queryProp]: value}}
 }
 
-// const genLocation = async (address_detail, province_id, district_id, ward_id) => {
-//   let provinceName;
-//   let districtName;
-//   let wardName;
-//     let province = await Province.findOne({
-//       province_id: province_id,
-//     });
-//     if(province){
-//       provinceName = province.province_name
-//     }
-//     let district = await District.findOne({
-//       district_id: district_id,
-//     });
-//     if(district){
-//       districtName= district.district_name
-//     }
-//     let ward = await Ward.findOne({ ward_id: ward_id });
-//     if(ward){
-//       wardName = ward.ward_name
-//     }
-//     return `${address_detail}, ${wardName}, ${districtName}, ${provinceName}`
-// }
+const genLocation = async (address_detail, province_id, district_id, ward_id) => {
+  let provinceName;
+  let districtName;
+  let wardName;
+    let province = await Province.findOne({
+      province_id: province_id,
+    });
+    if(province){
+      provinceName = province.province_name
+    }
+    let district = await District.findOne({
+      district_id: district_id,
+    });
+    if(district){
+      districtName= district.district_name
+    }
+    let ward = await Ward.findOne({ ward_id: ward_id });
+    if(ward){
+      wardName = ward.ward_name
+    }
+    return `${address_detail}, ${wardName}, ${districtName}, ${provinceName}`
+}
 
-module.exports = {uploadImage, removeVietnameseTones, findWithMultipleQuery}
+module.exports = {uploadImage, removeVietnameseTones, findWithMultipleQuery, genLocation }

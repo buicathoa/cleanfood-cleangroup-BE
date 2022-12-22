@@ -1,20 +1,10 @@
-const User = require("./../models/User");
 const jwt_decode = require("jwt-decode");
-const { handleError, handleSuccess } = require("../utils/handleResponse");
 const { to } = require("await-to-js");
 const bcrypt = require("bcrypt");
-const multer = require("multer");
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
-const sharp = require("sharp");
-const cloudinary = require("cloudinary").v2;
-// const redis = require('redis')
-// const REDIS_PORT = process.env.PORT || 6379
-// const client = redis.createClient(REDIS_PORT)
-// client.connect();
 
-// client.on('connect', () => {
-//     console.log('connected');
-// });
+const User = require("./../models/UserModel");
+const { handleError, handleSuccess } = require("../utils/handleResponse");
+
 const userController = {
   deleteUser: async (req, res) => {
     const user = await User.findOne({ _id: req.body.id });
@@ -31,29 +21,25 @@ const userController = {
       return handleError(res, { code: 400, message: "this user not exists!" });
     }
   },
+
   updateUser: async (req, res) => {
-    const user = await User.findById(req.body.id);
+    const decoded = await jwt_decode(req.headers.authorization);
+    const image = req.file.path; 
     const [err, result] = await to(
-      user.updateOne(
+      User.updateOne(
         {
-          firstname: req.body.firstname,
-          address: req.body.address,
-          lastname: req.body.lastname,
+          _id: decoded.id
         },
-        { $set: { username: req.body.username } }
+        { $set: !image ? req.body : {avatar: image} }
       )
     );
+    console.log('result', result)
     if (err) {
       return handleError(res, err);
     }
-    const userResponse = {
-      ...user._doc,
-      firstname: req.body.firstname,
-      address: req.body.address,
-      lastname: req.body.lastname,
-    };
-    return handleSuccess(res, userResponse, "update successfully!");
+    return handleSuccess(res, "update successfully!");
   },
+
   getAllUser: async (req, res) => {
     const province = await User.find({})
     await User.find({})
@@ -67,6 +53,7 @@ const userController = {
         });
       });
   },
+
   getUser: async (req, res) => {
     try{      
       const decoded = await jwt_decode(req.headers.authorization);
@@ -80,10 +67,11 @@ const userController = {
       return handleError(res, err);
     }
   },
+
   changePassword: async (req, res) => {
     try {
       if (req.body.newPassword === req.body.confirmPassword) {
-        const decoded = await jwt_decode(req.headers.token);
+        const decoded = await jwt_decode(req.headers.authorization);
         const user = await User.findOne({ username: decoded.username });
         if (!bcrypt.compareSync(req.body.oldPassword, user.password)) {
           return handleError(res, { code: 400, message: "Wrong password!" });
@@ -109,21 +97,12 @@ const userController = {
 
   uploadImageUser: async (req, res) => {
     try{
-      const decoded = await jwt_decode(req.headers.token);
+      const decoded = await jwt_decode(req.headers.authorization);
       const user = await User.findByIdAndUpdate(decoded.id, {
         avatar: req.file.path,
       });
       user.save();
-      if (userInfo.avatar) {
-        cloudinary.uploader.destroy(`avatar/${userInfo.avatar.split('avatar/')[1].split('.')[0]}`, function (error, result) {
-          if(error){
-            console.log('errorne', error)
-          }else {
-            console.log('resultne', result)
-          }
-        });
-      }
-      return handleSuccess(res);
+      return handleSuccess(res, req.file.path, 'Upload avatar successfully!');
     }catch(err){
       return handleError(err)
     }

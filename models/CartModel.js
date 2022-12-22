@@ -6,9 +6,9 @@ const Cart = new mongoose.Schema(
       type: String,
       required: true,
     },
-    combo_package: {
+    product_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "comboPackage",
+      ref: "Product",
       required: true,
     },
     quantity: {
@@ -19,11 +19,15 @@ const Cart = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    daily_calories: {
-      type: Number,
+    calories: {
+      type: String,
       required: true,
     },
-    session_register: {
+    session: {
+      type: String,
+      required: true
+    },
+    mealplans: {
       type: String,
       required: true
     }
@@ -61,7 +65,7 @@ const Purchase = new mongoose.Schema(
   { timestamps: true }
 );
 
-const CartSchema = mongoose.model("Cart", Cart);
+const CartSchema = mongoose.model("Carts", Cart);
 const PurchaseSchema = mongoose.model("Purchase", Purchase);
 
 module.exports = {

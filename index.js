@@ -9,7 +9,9 @@ const CartRoute = require("./routes/CartRoute");
 const GeneralMenuRoute = require("./routes/GeneralMenu");
 const OrderRoute = require("./routes/OrderRoute");
 const CoinRoute = require("./routes/CoinRoute");
-
+const UserRoute = require("./routes/UserRoute");
+const LocationRoute = require("./routes/LocationRoute");
+const DeliveryRoute = require("./routes/DeliveryRoute");
 // const userRoute = require("./routes/user");
 
 const { handleError } = require("./utils/handleResponse");
@@ -34,12 +36,20 @@ app.use("/v1/product", ProductRoute);
 app.use("/v1/cart", CartRoute);
 app.use("/v1/general-menu", GeneralMenuRoute);
 
+//user
+app.use("/v1/user", UserRoute)
+
 //order
 app.use("/v1/order", OrderRoute);
 
 //coins
 app.use("/v1/coin", CoinRoute);
 
+//location
+app.use("/v1/location", LocationRoute);
+
+//delivery
+app.use("/v1/delivery", DeliveryRoute);
 // app.use("/v1/user", userRoute);
 // app.use("/v1/province", locationRoute);
 // app.use("/v1/posts", postsRoute);

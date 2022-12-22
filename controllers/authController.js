@@ -75,7 +75,6 @@ const authController = {
   },
   loginUser: async (req, res) => {
     const salt = await bcrypt.genSalt(10);
-    const hashed = await bcrypt.hash(req.body.password, salt);
     const user = await UserModel.findOne({ username: req.body.username });
     if (user) {
       const userResponse = {...user._doc};

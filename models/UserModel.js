@@ -7,6 +7,10 @@ const userSchemaNormal = new mongoose.Schema(
       require: true,
       type: String,
     },
+    avatar: {
+      require: true,
+      type: String
+    },
     email: {
       type: String,
       required: true,
@@ -39,20 +43,26 @@ const userSchemaNormal = new mongoose.Schema(
       type: String,
       require: true,
     },
-    province_id: {
-      type: String,
-    },
-    district_id: {
-      type: String,
-    },
-    ward_id: {
-      type: String,
-    },
-    address_detail: {
-      type: String,
-    },
-    full_address: {
-      type: String,
+    delivery_address: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "delivery" }
+    ],
+    // province_id: {
+    //   type: String,
+    // },
+    // district_id: {
+    //   type: String,
+    // },
+    // ward_id: {
+    //   type: String,
+    // },
+    // address_detail: {
+    //   type: String,
+    // },
+    // full_address: {
+    //   type: String,
+    // },
+    gender: {
+      type: String
     },
     Cart: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Cart" }

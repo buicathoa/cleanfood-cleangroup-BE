@@ -1,34 +1,49 @@
 const UserModel = require("./../models/UserModel");
 const jwt_decode = require("jwt-decode");
 const { handleError, handleSuccess } = require("../utils/handleResponse");
-const { CartModel } = require("./../models/CartModel");
+const { Cart } = require("./../models/CartModel");
+const { calories, mealPlansSession, mealPlans } = require("../constants");
 var ObjectId = require("mongodb").ObjectId;
 
 const cartController = {
   addToCart: async (req, res) => {
-    const { combo_package, quantity, daily_calories, price, session_register } =
-      req.body;
-    const combo_package_id = ObjectId(combo_package);
-    const combo_package_found = await CartModel.findOne({
-      combo_package: combo_package_id,
-      daily_calories: daily_calories,
-    });
+    const {
+      product_id,
+      quantity,
+      calories_id,
+      price,
+      session_id,
+      mealplans_id,
+    } = req.body;
+
     const decoded = await jwt_decode(req.headers.authorization);
+    const productFound = await Cart.findOne({
+      $and: [
+        { product_id: ObjectId(product_id) },
+        { calories_id: calories_id },
+        { session_id: session_id },
+        { mealplans_id: mealplans_id },
+        { username: decoded.username },
+      ],
+    });
     try {
-      if (combo_package_found) {
-        await CartModel.updateOne(
-          { _id: combo_package_found._id },
-          { quantity: combo_package_found.quantity + quantity }
+      if (productFound) {
+        const newCart = await Cart.updateOne(
+          { _id: productFound._id },
+          { quantity: productFound.quantity + quantity }
         );
-        return handleSuccess(res, {}, { message: "Add to cart successfully!" });
+        return handleSuccess(res, newCart, { message: "Add to cart successfully!" });
       } else {
-        const newItemInCart = await new CartModel({
+        const newItemInCart = await new Cart({
           user_id: decoded.id,
-          combo_package: combo_package,
+          product_id: product_id,
           quantity: quantity,
           price: price,
-          daily_calories: daily_calories,
-          session_register: session_register
+          calories: calories.find((item) => item.value === calories_id)?.label,
+          session: mealPlansSession.find((item) => item.value === session_id)
+            ?.label,
+          mealplans: mealPlans.find((item) => item.value === mealplans_id)
+            ?.label,
         }).save();
         await UserModel.updateOne(
           { _id: decoded.id },
@@ -45,27 +60,35 @@ const cartController = {
 
   updateCartByUser: async (req, res) => {
     const { cart_id, quantity, inc_quantity } = req.body;
+    const decoded = await jwt_decode(req.headers.authorization);
     try {
-      quantity
-        ? await CartModel.findOneAndUpdate({ _id: cart_id }, { quantity: quantity })
-        : await CartModel.findOneAndUpdate(
-            { _id: cart_id },
-            { $inc: { quantity: inc_quantity } }
-          );
-      return handleSuccess(res, { message: "Update quantity successfully!" });
+      if(quantity){
+        await Cart.findOneAndUpdate(
+          {
+            $and: [{ _id: cart_id }, { username: decoded.id }],
+          },
+          { quantity: quantity }
+        )
+        return handleSuccess(res,{ message: "Update quantity successfully!" });
+      } else {
+        await Cart.findOneAndUpdate(
+          { $and: [{ _id: cart_id }, { user_id: decoded.id }] },
+          { $inc: { quantity: inc_quantity } }
+        )
+        return handleSuccess(res,{ message: "Update quantity successfully!" });
+      }
     } catch (err) {
       return handleError(res, err);
     }
   },
 
   removeCartItem: async (req, res) => {
-    const {cart_id} = req.body;
-    try{
-      await CartModel.findByIdAndRemove(cart_id)
-      return handleSuccess(res, {message: "Remove item successfully!"})
-    }
-    catch(err){
-      return handleError(res,err)
+    const { cart_id } = req.body;
+    try {
+      await Cart.findByIdAndRemove(cart_id);
+      return handleSuccess(res, { message: "Remove item successfully!" });
+    } catch (err) {
+      return handleError(res, err);
     }
   },
 
@@ -89,24 +112,29 @@ const cartController = {
             },
           },
           {
-            $project: {
-              line_items: "$Cart",
-            },
-          },
-          {
-            $unset: ["_id"],
-          },
-          {
             $unwind: {
-              path: "$line_items",
+              path: "$Cart",
             },
           },
           {
             $lookup: {
-              from: "combopackages",
-              localField: "line_items.combo_package",
+              from: "products",
+              localField: "Cart.product_id",
               foreignField: "_id",
-              as: "line_items.combo_package",
+              as: "Cart.product_info",
+            },
+          },
+          {
+            $project: {
+              calories_id: "$Cart.calories",
+              mealplans_id: "$Cart.mealplans",
+              session_id: "$Cart.session",
+              price: "$Cart.price",
+              quantity: "$Cart.quantity",
+              cart_id: "$Cart._id",
+              product_info: {
+                $arrayElemAt: ["$Cart.product_info", 0],
+              },
             },
           },
         ];
@@ -116,24 +144,35 @@ const cartController = {
           }
           const dataReturn = pipelines.map((item) => {
             return {
-              _id: item?.line_items?._id,
-              combo_package: item?.line_items?.combo_package[0],
-              quantity: item?.line_items?.quantity,
-              price: item?.line_items?.price,
-              daily_calories: item?.line_items?.daily_calories,
-              total_price: item?.line_items?.quantity * item?.line_items?.price
+              _id: item?._id,
+              product_info: item?.product_info,
+              quantity: item?.quantity,
+              price: item?.price,
+              daily_calories: item?.calories_id,
+              session: item?.session_id,
+              mealplans: item?.mealplans_id,
+              cart_id: item?.cart_id,
+              total_price: item?.quantity * item?.price,
             };
           });
           return handleSuccess(
             res,
-            { line_items: dataReturn, total_price: dataReturn.map(item => item.total_price).reduce((prev, curr) => prev + curr, 0)},
+            {
+              list_carts: dataReturn,
+              total_price: dataReturn
+                .map((item) => item.total_price)
+                .reduce((prev, curr) => prev + curr, 0),
+              total_quantity: dataReturn
+                .map((item) => item.quantity)
+                .reduce((prev, curr) => prev + curr, 0),
+            },
             "Get list cart successfully!"
           );
         });
       } else {
         return handleSuccess(
           res,
-          { line_items: [] },
+          { list_carts: [] },
           { message: "Empty Cart" }
         );
       }
