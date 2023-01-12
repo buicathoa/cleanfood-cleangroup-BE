@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 
 const User = require("./../models/UserModel");
 const { handleError, handleSuccess } = require("../utils/handleResponse");
+const UserModel = require("./../models/UserModel");
 
 const userController = {
   deleteUser: async (req, res) => {
@@ -24,7 +25,10 @@ const userController = {
 
   updateUser: async (req, res) => {
     const decoded = await jwt_decode(req.headers.authorization);
-    const image = req.file.path; 
+    let image;
+    if(req?.file?.path){
+      image = req.file.path
+    }
     const [err, result] = await to(
       User.updateOne(
         {
@@ -57,11 +61,9 @@ const userController = {
   getUser: async (req, res) => {
     try{      
       const decoded = await jwt_decode(req.headers.authorization);
-      if(decoded){
-        const user = await User.findById(decoded.id);
+        const user = await User.findById(decoded.id).populate("Cart");
         delete user._doc.password
         return handleSuccess(res, user, "Get user successfully!");
-      }
     }
     catch(err){
       return handleError(res, err);

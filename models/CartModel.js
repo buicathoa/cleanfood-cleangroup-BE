@@ -65,7 +65,7 @@ const Purchase = new mongoose.Schema(
   { timestamps: true }
 );
 
-const CartSchema = mongoose.model("Carts", Cart);
+const CartSchema = mongoose.model("Cart", Cart);
 const PurchaseSchema = mongoose.model("Purchase", Purchase);
 
 module.exports = {

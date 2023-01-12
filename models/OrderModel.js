@@ -7,61 +7,44 @@ const order = new mongoose.Schema(
         type: String, //success, pend: default, reject
         required: true
     },
-    date: {
+    quantity: {
+        type: Number,
+        required: true
+    },
+    total_price: {
+        type: Number,
+        required: true
+    },
+    calories: {
+        type: String,
+        required: true
+    },
+    mealplans: {
+        type: String,
+        required: true
+    },
+    session: {
+        type: String,
+        required: true
+    },
+    product_image: {
+        type: String,
+        required: true
+    },
+    product_title: {
+        type: String,
+        required: true
+    },
+    delivery_start_date: {
         type: Date,
         required: true
     },
-    line_items_combo: [
-        {
-            combo_id: {
-                type: mongoose.Schema.Types.ObjectId, ref: "ComboPackage"
-            },
-            quantity: {
-                type: Number,
-                required: true
-            },
-            daily_calories: {
-                type: String
-            }
-        }
-    ],
-    line_items_retail: [
-        {
-            product_id: {
-                type: String
-            },
-            quantity: {
-                type: Number
-            }
-        }
-    ],
-    shipping_address: {
-        full_address: {
-            type: String
-        },
-        city: {
-            type: String
-        },
-        district: {
-            type: String
-        },
-        ward: {
-            type: String
-        }
-    },
     pay_method: {
-        status: {
-            type: String
-        },
-        number: {
-            type: String
-        }
+        type: String,
+        required: true
     },
-    sub_total: {
-        type: Number
-    }
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("order", order)
+module.exports = mongoose.model("Order", order)

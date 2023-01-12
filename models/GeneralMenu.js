@@ -3,62 +3,121 @@ const mongoose = require("mongoose");
 const GeneralMenus = new mongoose.Schema(
   {
     breakfast_vi: {
-      type: String
+      type: String,
     },
     breakfast_en: {
-      type: String
+      type: String,
     },
     lunch_vi: {
-      type: String
+      type: String,
     },
     lunch_en: {
-      type: String
+      type: String,
     },
     dinner_vi: {
       type: String,
     },
     dinner_en: {
-      type: String
+      type: String,
     },
     date: {
-      type: Date
-    }
+      type: Date,
+    },
   },
   { timestamps: true }
 );
 
-
 const MenuRegister = new mongoose.Schema(
   {
-    date: {
-      type: Date
+    start: {
+      type: Date,
     },
-    ship_time: {
-      type: String
-    },
-    ship_place: {
-      type: String
+    end: {
+      type: Date,
     },
     order_status: {
-      type: String
+      type: String,
+    },
+    ship_place: {
+      type: String,
+      required: true,
+    },
+    province_id: {
+      type: String,
+      required: true,
+    },
+    district_id: {
+      type: String,
+      required: true,
+    },
+    ward_id: {
+      type: String,
+      required: true,
+    },
+    address_detail: {
+      type: String,
     },
     user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    combo_package: {
-      type: mongoose.Schema.Types.ObjectId, ref: "comboPackage"
+    full_name: {
+      type: String,
+      required: true,
+    },
+    phone_number: { type: String, required: true },
+    product: {
+      type: String,
     },
     calories: {
-      type: Number,
+      type: String,
+      required: true,
+    },
+    session: {
+      type: String,
+      required: true,
+    },
+    mealplans: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
+
+const OrderCancel = new mongoose.Schema(
+  {
+    product: {
+      type: String,
       required: true
-    }
+    },
+    calories: {
+      type: String,
+      required: true
+    },
+    session: {
+        type: String,
+        required: true
+    },
+    mealplans: {
+      type: String,
+      required: true
+    },
+    reason: {
+        type: String,
+        required: true
+    },
+    order_day_id: {
+      type: String,
+      required: true
+    },
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
   },
   { timestamps: true }
 );
 const GeneralMenusSchema = mongoose.model("GeneralMenus", GeneralMenus);
 const MenuRegisterSchema = mongoose.model("MenuRegister", MenuRegister);
-
-
+const OrderCancelSchema = mongoose.model("OrderCancel", OrderCancel);
 
 module.exports = {
-  GeneralMenus: GeneralMenusSchema,
-  MenuRegister: MenuRegisterSchema
+  GeneralMenusModel: GeneralMenusSchema,
+  MenuRegisterModel: MenuRegisterSchema,
+  OrderCancelModel: OrderCancelSchema
 };

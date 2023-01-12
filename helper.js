@@ -83,7 +83,7 @@ const genLocation = async (address_detail, province_id, district_id, ward_id) =>
     if(ward){
       wardName = ward.ward_name
     }
-    return `${address_detail}, ${wardName}, ${districtName}, ${provinceName}`
+    return `${address_detail}, ${wardName}, ${districtName}, ${provinceName === 'Thành phố Hồ Chí Minh' ? 'TpHCM' : provinceName}`
 }
 
 module.exports = {uploadImage, removeVietnameseTones, findWithMultipleQuery, genLocation }

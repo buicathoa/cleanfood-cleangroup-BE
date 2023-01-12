@@ -2,6 +2,18 @@ const mongoose = require("mongoose");
 
 const delivery = new mongoose.Schema(
   {
+    full_name: {
+      type: String,
+      required: true
+    },
+    phone_number: {
+      type: String,
+      required: true
+    },
+    delivery_time: {
+      type: [Date],
+      required: true
+    },
     province_id: {
       type: String,
       required: true
@@ -24,7 +36,7 @@ const delivery = new mongoose.Schema(
     default_address: {
       type: Boolean
     },
-    user_id: {
+    user: {
         type: mongoose.Schema.Types.ObjectId, ref: "User"
     }
   },

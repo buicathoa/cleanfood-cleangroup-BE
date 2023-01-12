@@ -6,7 +6,7 @@ const cookieParser = require("cookie-parser");
 const AuthRoute = require("./routes/AuthRoute");
 const ProductRoute = require("./routes/ProductRoute");
 const CartRoute = require("./routes/CartRoute");
-const GeneralMenuRoute = require("./routes/GeneralMenu");
+const GeneralMenuRoute = require("./routes/GeneralMenuRoute");
 const OrderRoute = require("./routes/OrderRoute");
 const CoinRoute = require("./routes/CoinRoute");
 const UserRoute = require("./routes/UserRoute");
@@ -50,6 +50,8 @@ app.use("/v1/location", LocationRoute);
 
 //delivery
 app.use("/v1/delivery", DeliveryRoute);
+
+
 // app.use("/v1/user", userRoute);
 // app.use("/v1/province", locationRoute);
 // app.use("/v1/posts", postsRoute);
