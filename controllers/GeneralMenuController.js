@@ -60,6 +60,7 @@ const GeneralMenuController = {
       delivery_end_time,
       phone_number,
       full_name,
+      order_id,
       calories,
       session,
       mealplans,
@@ -85,13 +86,14 @@ const GeneralMenuController = {
             start:
               moment(day1).format("YYYY-MM-DD") + " " + delivery_start_time,
             end: moment(day1).format("YYYY-MM-DD") + " " + delivery_end_time,
-            order_status: "pending",
+            order_status: "wait_confirmed",
             ship_place: combineLocation,
             province_id: province_id,
             district_id: district_id,
             ward_id: ward_id,
             address_detail: address_detail,
             user_id: decoded.id,
+            order_id: order_id,
             product: product,
             phone_number: phone_number,
             full_name: full_name,
@@ -188,7 +190,7 @@ const GeneralMenuController = {
     }
   },
   cancelDayOrder: async (req, res) => {
-    const { product, calories, session, reason, order_day_id, mealplans } = req.body;
+    const { product, calories, session, reason, order_day_id, mealplans, order_id } = req.body;
     try {
       const decoded = await jwt_decode(req.headers.authorization);
       await new OrderCancelModel({
@@ -198,6 +200,7 @@ const GeneralMenuController = {
         reason: reason,
         mealplans: mealplans,
         order_day_id: order_day_id,
+        order_id: order_id,
         user_id: decoded.id,
       }).save();
 
@@ -260,7 +263,8 @@ const GeneralMenuController = {
       calories,
       session,
       mealplans,
-      order_cancel_id
+      order_cancel_id,
+      order_id
     } = req.body;
     try {
       const decoded = await jwt_decode(req.headers.authorization);
@@ -290,6 +294,7 @@ const GeneralMenuController = {
         calories: calories,
         session: session,
         mealplans: mealplans,
+        order_id: order_id
       }).save();
 
       await UserModel.findByIdAndUpdate(decoded.id, {
@@ -305,6 +310,9 @@ const GeneralMenuController = {
       return handleError(res, err)
     }
   },
+  confirmRegisterDay: async (req, res) => {
+
+  }
 };
 
 module.exports = GeneralMenuController;

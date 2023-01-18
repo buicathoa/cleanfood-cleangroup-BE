@@ -57,7 +57,8 @@ const MenuRegister = new mongoose.Schema(
     address_detail: {
       type: String,
     },
-    user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    order_id: { type: mongoose.Schema.Types.ObjectId, ref: "Order", required: true },
     full_name: {
       type: String,
       required: true,
@@ -72,11 +73,9 @@ const MenuRegister = new mongoose.Schema(
     },
     session: {
       type: String,
-      required: true,
     },
     mealplans: {
-      type: String,
-      required: true,
+      type: String
     },
   },
   { timestamps: true }
@@ -103,6 +102,10 @@ const OrderCancel = new mongoose.Schema(
     reason: {
         type: String,
         required: true
+    },
+    order_id: {
+      type: String,
+      required: true
     },
     order_day_id: {
       type: String,

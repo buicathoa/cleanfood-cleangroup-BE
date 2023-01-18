@@ -144,14 +144,13 @@ const cartController = {
           }
           const dataReturn = pipelines.map((item) => {
             return {
-              _id: item?._id,
+              _id: item?.cart_id,
               product_info: item?.product_info,
               quantity: item?.quantity,
               price: item?.price,
               daily_calories: item?.calories_id,
               session: item?.session_id,
               mealplans: item?.mealplans_id,
-              cart_id: item?.cart_id,
               total_price: item?.quantity * item?.price,
             };
           });

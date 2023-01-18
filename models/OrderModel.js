@@ -3,6 +3,10 @@ const mongoose = require("mongoose");
 const order = new mongoose.Schema(
   {
     user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    order_code: {
+        type: String,
+        required: true
+    },
     status:{
         type: String, //success, pend: default, reject
         required: true
@@ -19,14 +23,6 @@ const order = new mongoose.Schema(
         type: String,
         required: true
     },
-    mealplans: {
-        type: String,
-        required: true
-    },
-    session: {
-        type: String,
-        required: true
-    },
     product_image: {
         type: String,
         required: true
@@ -35,7 +31,7 @@ const order = new mongoose.Schema(
         type: String,
         required: true
     },
-    delivery_start_date: {
+    delivery_date: {
         type: Date,
         required: true
     },
