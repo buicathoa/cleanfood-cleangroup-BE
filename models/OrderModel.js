@@ -23,6 +23,12 @@ const order = new mongoose.Schema(
         type: String,
         required: true
     },
+    mealplans: {
+        type: String
+    },
+    session: {
+        type: String
+    },
     product_image: {
         type: String,
         required: true

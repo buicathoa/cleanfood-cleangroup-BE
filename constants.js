@@ -15,3 +15,6 @@ exports.calories = [
     { value: 1, ratio: 0, quantity: 6, label: "1 tuần" },
     { value: 2, ratio: 2, quantity: 12, label: "2 tuần" },
   ];
+
+  exports.uri = 'mongodb://127.0.0.1:27017/?replicaSet=rs0&w=majority&readPreference=primary&ssl=false';
+   

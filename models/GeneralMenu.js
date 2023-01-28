@@ -59,6 +59,10 @@ const MenuRegister = new mongoose.Schema(
     },
     user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     order_id: { type: mongoose.Schema.Types.ObjectId, ref: "Order", required: true },
+    shipping_code: {
+      type: String,
+      required: true
+    },
     full_name: {
       type: String,
       required: true,

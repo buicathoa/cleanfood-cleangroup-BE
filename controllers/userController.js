@@ -62,7 +62,7 @@ const userController = {
     try{      
       const decoded = await jwt_decode(req.headers.authorization);
         const user = await User.findById(decoded.id).populate("Cart");
-        delete user._doc.password
+        // delete user?.password
         return handleSuccess(res, user, "Get user successfully!");
     }
     catch(err){

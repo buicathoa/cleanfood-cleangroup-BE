@@ -20,9 +20,9 @@ const cartController = {
     const productFound = await Cart.findOne({
       $and: [
         { product_id: ObjectId(product_id) },
-        { calories_id: calories_id },
-        { session_id: session_id },
-        { mealplans_id: mealplans_id },
+        { calories: calories_id },
+        { session: session_id },
+        { mealplans: mealplans_id },
         { username: decoded.username },
       ],
     });
@@ -63,19 +63,21 @@ const cartController = {
     const decoded = await jwt_decode(req.headers.authorization);
     try {
       if(quantity){
-        await Cart.findOneAndUpdate(
+        const updateItem = await Cart.findOneAndUpdate(
           {
-            $and: [{ _id: cart_id }, { username: decoded.id }],
+            $and: [{ _id: cart_id }, { user_id: decoded.id }],
           },
-          { quantity: quantity }
+          { quantity: quantity },
+          {new: true}
         )
-        return handleSuccess(res,{ message: "Update quantity successfully!" });
+        return handleSuccess(res, updateItem, { message: "Update quantity successfully!" });
       } else {
-        await Cart.findOneAndUpdate(
+        const updateItem = await Cart.findOneAndUpdate(
           { $and: [{ _id: cart_id }, { user_id: decoded.id }] },
-          { $inc: { quantity: inc_quantity } }
+          { $inc: { quantity: inc_quantity } },
+          {new: true}
         )
-        return handleSuccess(res,{ message: "Update quantity successfully!" });
+        return handleSuccess(res, updateItem, { message: "Update quantity successfully!" });
       }
     } catch (err) {
       return handleError(res, err);
@@ -96,7 +98,7 @@ const cartController = {
     const decoded = await jwt_decode(req.headers.authorization);
     const listCart = await UserModel.findById(decoded.id);
     try {
-      if (listCart._doc.Cart?.length > 0) {
+      if (listCart?.Cart?.length > 0) {
         const pipeline = [
           {
             $match: {

@@ -7,8 +7,11 @@ const {
   OrderCancelModel,
 } = require("../models/GeneralMenu");
 const moment = require("moment");
-const { calories, mealPlansSession, mealPlans } = require("../constants");
+const { MongoClient } = require("mongodb");
+
+const { calories, mealPlansSession, mealPlans, uri } = require("../constants");
 const UserModel = require("../models/UserModel");
+const CodeModel = require("../models/CodeModel");
 
 const GeneralMenuController = {
   createGeneralMenus: async (req, res) => {
@@ -44,7 +47,6 @@ const GeneralMenuController = {
       const rangeOfDaysAndMenu = await GeneralMenusModel.find({}).sort({
         start: 1,
       });
-      debugger;
       return handleSuccess(res, rangeOfDaysAndMenu, {
         message: "Get menu successfully!",
       });
@@ -71,6 +73,10 @@ const GeneralMenuController = {
       address_detail,
     } = req.body;
     const decoded = await jwt_decode(req.headers.authorization);
+    const client = await MongoClient.connect(uri, { useNewUrlParser: true });
+    const sessionTransaction = await client.startSession();
+    sessionTransaction.startTransaction();
+
     try {
       const day1 = moment(start_date);
       const day2 = moment(end_date);
@@ -80,7 +86,39 @@ const GeneralMenuController = {
         district_id,
         ward_id
       );
+      let recordUpdate;
       while (day1 < day2) {
+        const time = moment().format("YYYYMMDD");
+        if(day1.format("dddd") !== 'Sunday'){
+          recordUpdate =  await CodeModel.findOneAndUpdate({ type: "SH" }, [
+            {
+              $set: {
+                date: {
+                  $cond: {
+                    if: {
+                      $eq: ["$date", time],
+                    },
+                    then: time,
+                    else: time,
+                  },
+                },
+                code: {
+                  $cond: {
+                    if: {
+                      $eq: ["$date", time],
+                    },
+                    then: {
+                      $add: [
+                        "$code", 1
+                      ]
+                    },
+                    else: 1,
+                  }
+                },
+              },
+            },
+          ], {new: true, sessionTransaction});
+        }
         if (day1.format("dddd") !== "Sunday") {
           await MenuRegisterModel.insertMany({
             start:
@@ -94,6 +132,7 @@ const GeneralMenuController = {
             address_detail: address_detail,
             user_id: decoded.id,
             order_id: order_id,
+            shipping_code: `SH-${recordUpdate.date}-${recordUpdate.code}`,
             product: product,
             phone_number: phone_number,
             full_name: full_name,
@@ -105,12 +144,15 @@ const GeneralMenuController = {
         }
         day1.add(1, "day");
       }
-      return handleSuccess(
-        res,
-        {},
-        { message: "Create timetable register menu successfully!" }
-      );
+      await sessionTransaction.commitTransaction();
+      await sessionTransaction.endSession();
+
+      return handleSuccess(res, {
+        message: "Create timetable register menu successfully!",
+      });
     } catch (err) {
+      await sessionTransaction.abortTransaction();
+      await sessionTransaction.endSession();
       return handleError(res, err);
     }
   },
@@ -190,7 +232,15 @@ const GeneralMenuController = {
     }
   },
   cancelDayOrder: async (req, res) => {
-    const { product, calories, session, reason, order_day_id, mealplans, order_id } = req.body;
+    const {
+      product,
+      calories,
+      session,
+      reason,
+      order_day_id,
+      mealplans,
+      order_id,
+    } = req.body;
     try {
       const decoded = await jwt_decode(req.headers.authorization);
       await new OrderCancelModel({
@@ -264,7 +314,7 @@ const GeneralMenuController = {
       session,
       mealplans,
       order_cancel_id,
-      order_id
+      order_id,
     } = req.body;
     try {
       const decoded = await jwt_decode(req.headers.authorization);
@@ -274,13 +324,47 @@ const GeneralMenuController = {
         address_info.district_id,
         address_info.ward_id
       );
+      let recordUpdate
+      if(day1.format("dddd") !== 'Sunday'){
+        recordUpdate =  await CodeModel.findOneAndUpdate({ type: "SH" }, [
+          {
+            $set: {
+              date: {
+                $cond: {
+                  if: {
+                    $eq: ["$date", moment().format('YYYYMMDD')],
+                  },
+                  then: moment().format('YYYYMMDD'),
+                  else: moment().format('YYYYMMDD'),
+                },
+              },
+              code: {
+                $cond: {
+                  if: {
+                    $eq: ["$date", moment().format('YYYYMMDD')],
+                  },
+                  then: {
+                    $add: [
+                      "$code", 1
+                    ]
+                  },
+                  else: 1,
+                }
+              },
+            },
+          },
+        ], {new: true, sessionTransaction});
+      }
+
       const dayItemRegister = await new MenuRegisterModel({
         start:
           moment(delivery_date).format("YYYY-MM-DD") +
           " " +
           moment(delivery_start_time).format("HH:mm:ss"),
         end:
-          moment(delivery_date).format("YYYY-MM-DD") + " " + moment(delivery_end_time).format("HH:mm:ss"),
+          moment(delivery_date).format("YYYY-MM-DD") +
+          " " +
+          moment(delivery_end_time).format("HH:mm:ss"),
         order_status: order_status,
         user_id: decoded.id,
         province_id: address_info.province_id,
@@ -294,25 +378,24 @@ const GeneralMenuController = {
         calories: calories,
         session: session,
         mealplans: mealplans,
-        order_id: order_id
+        order_id: order_id,
+        shipping_code: `SH-${recordUpdate.date}-${recordUpdate.code}`,
       }).save();
 
       await UserModel.findByIdAndUpdate(decoded.id, {
         $inc: {
-          order_day_cancel: -1
-        }
-      })
+          order_day_cancel: -1,
+        },
+      });
 
-      await OrderCancelModel.deleteOne({_id: order_cancel_id})
+      await OrderCancelModel.deleteOne({ _id: order_cancel_id });
 
-      return handleSuccess(res, dayItemRegister, 'Create successfully')
+      return handleSuccess(res, dayItemRegister, "Create successfully");
     } catch (err) {
-      return handleError(res, err)
+      return handleError(res, err);
     }
   },
-  confirmRegisterDay: async (req, res) => {
-
-  }
+  confirmRegisterDay: async (req, res) => {},
 };
 
 module.exports = GeneralMenuController;
